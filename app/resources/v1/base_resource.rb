@@ -8,6 +8,8 @@ module V1
 
     before_save :authorize_create_or_update
 
+    before_remove :authorize_destroy
+
     class << self
       def creatable_fields(context)
         super - [:id, :created_at, :updated_at]
@@ -36,6 +38,10 @@ module V1
     def authorize_create_or_update
       permission = _model.new_record? ? :create? : :update?
       raise Pundit::NotAuthorizedError unless policy.public_send(permission)
+    end
+
+    def authorize_destroy
+      fail Pundit::NotAuthorizedError, "foo bar baz" unless policy.destroy?
     end
   end
 end
