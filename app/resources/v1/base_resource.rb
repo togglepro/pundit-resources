@@ -43,5 +43,26 @@ module V1
     def authorize_destroy
       fail Pundit::NotAuthorizedError, "foo bar baz" unless policy.destroy?
     end
+
+    def records_for(association_name, options={})
+      association_reflection = _model.class.reflect_on_association(association_name)
+
+      if association_reflection.macro == :has_many
+        records = _model.public_send(association_name)
+        policy_scope = Pundit.policy_scope!(
+          context[:current_user],
+          association_reflection.class_name.constantize
+        )
+        records.merge(policy_scope)
+      elsif [:has_one, :belongs_to].include?(association_reflection.macro)
+        record = _model.public_send(association_name)
+
+        if Pundit.policy!(context[:current_user], record).show?
+          record
+        else
+          nil
+        end
+      end
+    end
   end
 end
