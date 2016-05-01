@@ -57,7 +57,7 @@ module V1
       elsif [:has_one, :belongs_to].include?(association_reflection.macro)
         record = _model.public_send(association_name)
 
-        if Pundit.policy!(context[:current_user], record).show?
+        if record && Pundit.policy!(context[:current_user], record).show?
           record
         else
           nil
