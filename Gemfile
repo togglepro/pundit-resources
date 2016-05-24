@@ -1,4 +1,6 @@
 source 'https://rubygems.org'
 
-# Specify your gem's dependencies in pundit-resources.gemspec
+# Dependencies for dummy application
+gem 'sqlite3'
+
 gemspec
