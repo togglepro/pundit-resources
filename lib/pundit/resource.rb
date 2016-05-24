@@ -11,10 +11,24 @@ module Pundit
 
     module ClassMethods
       def records(options = {})
+        warn_if_show_defined
+
         context = options[:context]
         Pundit.policy_scope!(context[:current_user], _model_class)
       end
+
+      private
+
+      def warn_if_show_defined
+        policy_class = Pundit::PolicyFinder.new(_model_class.new).policy!
+        if policy_class.method_defined?(:show?)
+          puts "WARN: pundit-resources does not use the show? action."
+          puts "      #{policy_class::Scope} will be used instead."
+        end
+      end
     end
+
+    protected
 
     def current_user
       context&.[](:current_user)
@@ -46,12 +60,20 @@ module Pundit
       elsif [:has_one, :belongs_to].include?(association_reflection.macro)
         record = _model.public_send(association_name)
 
-        if record && Pundit.policy!(context[:current_user], record).show?
+        # Don't rely on policy.show? being defined since it isn't used for
+        # show actions directly and should always have the same behaviour.
+        if record && show?(Pundit.policy!(context[:current_user], record))
           record
         else
           nil
         end
       end
+    end
+
+    private
+
+    def show?(policy)
+      policy.scope.where(id: policy.record.id).exists?
     end
   end
 end
