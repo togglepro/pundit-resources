@@ -1,30 +1,19 @@
-module V1
-  class BaseResource < JSONAPI::Resource
-    abstract
+require "active_support/concern"
 
-    attribute :created_at
+module Pundit
+  module Resource
+    extend ActiveSupport::Concern
 
-    attribute :updated_at
+    included do
+      before_save :authorize_create_or_update
+      before_remove :authorize_destroy
+    end
 
-    before_save :authorize_create_or_update
-
-    before_remove :authorize_destroy
-
-    class << self
-      def creatable_fields(context)
-        super - [:id, :created_at, :updated_at]
-      end
-
-      alias_method :updatable_fields, :creatable_fields
-
+    module ClassMethods
       def records(options = {})
         context = options[:context]
         Pundit.policy_scope!(context[:current_user], _model_class)
       end
-    end
-
-    def fetchable_fields
-      super
     end
 
     def current_user

@@ -1,4 +1,5 @@
 require "pundit/resources/version"
+require "pundit/resource"
 
 module Pundit
   module Resources
