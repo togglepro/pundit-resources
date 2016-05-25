@@ -6,6 +6,10 @@ class UserPolicy
     @record = record
   end
 
+  def update?
+    false
+  end
+
   def scope
     Pundit.policy_scope!(user, record.class)
   end

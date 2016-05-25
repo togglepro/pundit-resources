@@ -40,7 +40,7 @@ module Pundit
 
     def authorize_create_or_update
       permission = _model.new_record? ? :create? : :update?
-      raise Pundit::NotAuthorizedError unless policy.public_send(permission)
+      not_authorized!(permission) unless policy.public_send(permission)
     end
 
     def authorize_destroy
@@ -71,6 +71,12 @@ module Pundit
     end
 
     private
+
+    def not_authorized!(permission)
+      query = permission.to_s.sub(/\?\Z/, "")
+      options = { query: query, record: _model, policy: policy }
+      raise Pundit::NotAuthorizedError, options
+    end
 
     def show?(policy)
       policy.scope.where(id: policy.record.id).exists?
