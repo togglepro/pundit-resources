@@ -6,6 +6,10 @@ class UserPolicy
     @record = record
   end
 
+  def create?
+    false
+  end
+
   def update?
     false
   end
