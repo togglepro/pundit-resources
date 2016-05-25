@@ -6,7 +6,10 @@ module Pundit
       include ActionController::Rescue
 
       JSONAPI.configure do |config|
-        config.exception_class_whitelist = [Pundit::NotAuthorizedError]
+        error = Pundit::NotAuthorizedError
+        unless config.exception_class_whitelist.include? error
+          config.exception_class_whitelist << error
+        end
       end
 
       rescue_from Pundit::NotAuthorizedError, with: :reject_forbidden_request

@@ -39,12 +39,12 @@ module Pundit
     end
 
     def authorize_create_or_update
-      permission = _model.new_record? ? :create? : :update?
-      not_authorized!(permission) unless policy.public_send(permission)
+      action = _model.new_record? ? :create : :update
+      not_authorized!(action) unless policy.public_send(:"#{action}?")
     end
 
     def authorize_destroy
-      fail Pundit::NotAuthorizedError, "foo bar baz" unless policy.destroy?
+      not_authorized! :destroy unless policy.destroy?
     end
 
     def records_for(association_name, options={})
@@ -72,9 +72,8 @@ module Pundit
 
     private
 
-    def not_authorized!(permission)
-      query = permission.to_s.sub(/\?\Z/, "")
-      options = { query: query, record: _model, policy: policy }
+    def not_authorized!(action)
+      options = { query: action, record: _model, policy: policy }
       raise Pundit::NotAuthorizedError, options
     end
 
