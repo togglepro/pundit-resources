@@ -145,7 +145,8 @@ RSpec.describe UsersController, type: :controller do
 
   describe "#update" do
     def do_request
-      patch :update, params: { id: id, data: { id: id, type: "users", attributes: { "created-at": Time.now } } }
+      data = { id: id, type: "users", attributes: { "created-at": Time.now } }
+      patch :update, params: { id: id, data: data }
     end
 
     before do
@@ -179,7 +180,7 @@ RSpec.describe UsersController, type: :controller do
             to receive(:update?).and_return(false)
         end
 
-        context "when the user is not visible to the user" do
+        context "when the user is not included in the scope" do
           before do
             allow_any_instance_of(UserPolicy::Scope).
               to receive(:resolve).and_return(User.none)
@@ -203,7 +204,7 @@ RSpec.describe UsersController, type: :controller do
           end
         end
 
-        context "when the user is visible to the user" do
+        context "when the user is included in the scope" do
           before do
             allow_any_instance_of(UserPolicy::Scope).
               to receive(:resolve).and_return(User.all)
@@ -226,7 +227,8 @@ RSpec.describe UsersController, type: :controller do
 
       context "and Pundit says yes" do
         before do
-          allow_any_instance_of(UserPolicy).to receive(:update?).and_return(true)
+          allow_any_instance_of(UserPolicy).
+            to receive(:update?).and_return(true)
           do_request
         end
 
@@ -263,7 +265,7 @@ RSpec.describe UsersController, type: :controller do
             to receive(:destroy?).and_return(false)
         end
 
-        context "when the user is not visible to the user" do
+        context "when the user is not included in the scope" do
           before do
             allow_any_instance_of(UserPolicy::Scope).
               to receive(:resolve).and_return(User.none)
@@ -287,7 +289,7 @@ RSpec.describe UsersController, type: :controller do
           end
         end
 
-        context "when the user is visible to the user" do
+        context "when the user is included in the scope" do
           before do
             allow_any_instance_of(UserPolicy::Scope).
               to receive(:resolve).and_return(User.all)
@@ -310,7 +312,8 @@ RSpec.describe UsersController, type: :controller do
 
       context "and Pundit says yes" do
         before do
-          allow_any_instance_of(UserPolicy).to receive(:destroy?).and_return(true)
+          allow_any_instance_of(UserPolicy).
+            to receive(:destroy?).and_return(true)
         end
 
         it "destroys the user" do
