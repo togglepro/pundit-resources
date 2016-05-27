@@ -54,7 +54,7 @@ module Pundit
         records = _model.public_send(association_name)
         policy_scope = Pundit.policy_scope!(
           context[:current_user],
-          association_reflection.class_name.constantize
+          records
         )
         records.merge(policy_scope)
       elsif [:has_one, :belongs_to].include?(association_reflection.macro)
