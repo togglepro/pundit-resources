@@ -10,6 +10,14 @@ RSpec.describe UsersController, type: :controller do
 
   let(:body) { JSON.parse(response.body, symbolize_names: true) }
 
+  def params_hash(inner_hash)
+    if Rails.version < '5.0.0'
+      inner_hash
+    else
+      { params: inner_hash }
+    end
+  end
+
   describe "#index" do
     # Make sure there are multiple users in the database,
     # and select one at random that will feature in the random scope
@@ -40,7 +48,7 @@ RSpec.describe UsersController, type: :controller do
 
   describe "#create" do
     def do_request
-      post :create, params: { data: { type: :users } }
+      post :create, params_hash(data: { type: :users })
     end
 
     before do
@@ -85,7 +93,7 @@ RSpec.describe UsersController, type: :controller do
 
   describe "#show" do
     def do_request
-      get :show, params: { id: id }
+      get :show, params_hash(id: id)
     end
 
     context "when the user does not exist" do
@@ -146,7 +154,7 @@ RSpec.describe UsersController, type: :controller do
   describe "#update" do
     def do_request
       data = { id: id, type: "users", attributes: { "created-at": Time.now } }
-      patch :update, params: { id: id, data: data }
+      patch :update, params_hash(id: id, data: data)
     end
 
     before do
@@ -242,7 +250,7 @@ RSpec.describe UsersController, type: :controller do
 
   describe "#destroy" do
     def do_request
-      delete :destroy, params: { id: id }
+      delete :destroy, params_hash(id: id)
     end
 
     context "when the user does not exist" do
