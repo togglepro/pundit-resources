@@ -16,3 +16,4 @@ spec/dummy/log/*.log
 spec/dummy/tmp/
 !spec/dummy/tmp/.keep
 spec/examples.txt
+/gemfiles/*.gemfile.lock
