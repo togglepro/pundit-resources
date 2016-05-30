@@ -3,6 +3,10 @@ class PostPolicy < ApplicationPolicy
     false
   end
 
+  def destroy?
+    false
+  end
+
   class Scope < Scope
   end
 end
