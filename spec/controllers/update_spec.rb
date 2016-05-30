@@ -7,10 +7,6 @@ RSpec.describe UsersController, type: :controller do
       patch :update, params_hash(id: id, data: data)
     end
 
-    before do
-      request.headers["Content-Type"] = "application/vnd.api+json"
-    end
-
     context "when the user does not exist" do
       let(:id) { next_id User }
 

@@ -11,6 +11,10 @@ RSpec.shared_context "controller specs", type: :controller do
     end
   end
 
+  before do
+    request.headers["Content-Type"] = "application/vnd.api+json"
+  end
+
   def next_id(model_class)
     model_class.order(:id).select(:id).first&.id.to_i + 1
   end

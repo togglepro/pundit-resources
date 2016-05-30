@@ -6,10 +6,6 @@ RSpec.describe UsersController, type: :controller do
       post :create, params_hash(data: { type: :users })
     end
 
-    before do
-      request.headers["Content-Type"] = "application/vnd.api+json"
-    end
-
     context "but Pundit says no" do
       before do
         expect_any_instance_of(UserPolicy).
