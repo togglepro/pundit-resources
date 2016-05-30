@@ -1,6 +1,6 @@
 # Pundit::Resources
 
-Pundit::Resources is a gem that makes [JSONAPI::Resources](jsonapi-resources) use [Pundit][pundit] authorization.
+Pundit::Resources is a gem that makes [JSONAPI::Resources][jsonapi-resources] use [Pundit][pundit] authorization.
 
 ## Installation
 
