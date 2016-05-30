@@ -10,4 +10,8 @@ RSpec.shared_context "controller specs", type: :controller do
       { params: inner_hash }
     end
   end
+
+  def next_id(model_class)
+    model_class.order(:id).select(:id).first&.id.to_i + 1
+  end
 end

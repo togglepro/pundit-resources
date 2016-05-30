@@ -1,18 +1,13 @@
 require "rails_helper"
 
 RSpec.describe UsersController, type: :controller do
-  describe "#update" do
+  describe "#destroy" do
     def do_request
-      data = { id: id, type: "users", attributes: { "created-at": Time.now } }
-      patch :update, params_hash(id: id, data: data)
-    end
-
-    before do
-      request.headers["Content-Type"] = "application/vnd.api+json"
+      delete :destroy, params_hash(id: id)
     end
 
     context "when the user does not exist" do
-      let(:id) { User.order(:id).select(:id).first&.id.to_i + 1 }
+      let(:id) { next_id User }
 
       before { do_request }
 
@@ -25,17 +20,10 @@ RSpec.describe UsersController, type: :controller do
       let!(:user) { User.create! }
       let(:id) { user.id }
 
-      it "uses the scope instead of calling #update?" do
-        expect_any_instance_of(UserPolicy::Scope).to receive(:resolve)
-        do_request
-      end
-
-      # This should return 404 when the user can't see the resource,
-      # but 403 when it can.
       context "but Pundit says no" do
         before do
           allow_any_instance_of(UserPolicy).
-            to receive(:update?).and_return(false)
+            to receive(:destroy?).and_return(false)
         end
 
         context "when the user is not included in the scope" do
@@ -75,9 +63,9 @@ RSpec.describe UsersController, type: :controller do
 
           it "contains an error in the JSON response" do
             expect(body[:errors].count).to eq 1
-            expect(body.dig(:errors, 0, :title)).to eq "Update Forbidden"
+            expect(body.dig(:errors, 0, :title)).to eq "Destroy Forbidden"
             expect(body.dig(:errors, 0, :detail)).to eq <<-DESC.strip
-              You don't have permission to update this user.
+              You don't have permission to destroy this user.
             DESC
           end
         end
@@ -86,13 +74,16 @@ RSpec.describe UsersController, type: :controller do
       context "and Pundit says yes" do
         before do
           allow_any_instance_of(UserPolicy).
-            to receive(:update?).and_return(true)
-          do_request
+            to receive(:destroy?).and_return(true)
         end
 
-        it "responds with 200 OK" do
-          expect(response).to have_http_status 200
-          expect(body[:data][:id]).to eq user.id.to_s
+        it "destroys the user" do
+          expect { do_request }.to change { User.count }.by(-1)
+        end
+
+        it "responds with 204 No Content" do
+          do_request
+          expect(response).to have_http_status 204
         end
       end
     end

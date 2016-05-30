@@ -7,7 +7,7 @@ RSpec.describe UsersController, type: :controller do
     end
 
     context "when the user does not exist" do
-      let(:id) { User.order(:id).select(:id).first&.id.to_i + 1 }
+      let(:id) { next_id User }
 
       before { do_request }
 
