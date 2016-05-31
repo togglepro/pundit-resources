@@ -14,6 +14,7 @@ module Pundit
         warn_if_show_defined
 
         context = options[:context]
+        context[:policy_used].call
         Pundit.policy_scope!(context[:current_user], _model_class)
       end
 
@@ -30,6 +31,11 @@ module Pundit
 
     protected
 
+    def can(method)
+      context[:policy_used].call
+      policy.public_send(method)
+    end
+
     def current_user
       context&.[](:current_user)
     end
@@ -40,11 +46,11 @@ module Pundit
 
     def authorize_create_or_update
       action = _model.new_record? ? :create : :update
-      not_authorized!(action) unless policy.public_send(:"#{action}?")
+      not_authorized!(action) unless can :"#{action}?"
     end
 
     def authorize_destroy
-      not_authorized! :destroy unless policy.destroy?
+      not_authorized! :destroy unless can :destroy?
     end
 
     def records_for(association_name, options={})

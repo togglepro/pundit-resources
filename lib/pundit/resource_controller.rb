@@ -4,6 +4,9 @@ module Pundit
 
     included do
       include ActionController::Rescue
+      include AbstractController::Callbacks
+
+      after_action :enforce_policy_use
 
       JSONAPI.configure do |config|
         error = Pundit::NotAuthorizedError
@@ -16,6 +19,12 @@ module Pundit
     end
 
     protected
+
+    def enforce_policy_use
+      return if @policy_used
+      raise Pundit::AuthorizationNotPerformedError,
+        "#{params[:controller]}##{params[:action]}"
+    end
 
     def reject_forbidden_request(error)
       type = error.record.class.name.underscore.humanize(capitalize: false)
@@ -30,7 +39,7 @@ module Pundit
     end
 
     def context
-      { current_user: current_user }
+      { current_user: current_user, policy_used: -> { @policy_used = true } }
     end
 
     def current_user

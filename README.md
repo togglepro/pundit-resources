@@ -29,6 +29,8 @@ Include `Pundit::ResourceController` in the resource controllers that should use
 You also need to define a `current_user` method on the controller.
 The result of this method will be passed as the user parameter to the Pundit policies.
 
+`Pundit::ResourceController` will raise an exception if authorization is not performed on any action, so you don't have to worry about anything slipping through the cracks.
+
 ```ruby
 class ApplicationController < JSONAPI::ResourceController
   include Pundit::ResourceController
