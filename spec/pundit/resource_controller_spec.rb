@@ -14,6 +14,14 @@ RSpec.describe Pundit::ResourceController do
     end
   end
 
+  describe "#current_user" do
+    it "raises an exception" do
+      expect { controller.send(:current_user) }.
+        to raise_error NotImplementedError,
+        "#{controller_class} does not override #current_user"
+    end
+  end
+
   context "when included" do
     def config
       JSONAPI.configuration

@@ -34,6 +34,7 @@ module Pundit
     end
 
     def current_user
+      raise NotImplementedError, "#{self.class} does not override #current_user"
     end
   end
 end
