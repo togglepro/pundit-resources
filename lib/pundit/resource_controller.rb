@@ -21,7 +21,7 @@ module Pundit
     protected
 
     def enforce_policy_use
-      return if @policy_used
+      return if @policy_used || response.status.in?(400...600)
       raise Pundit::AuthorizationNotPerformedError,
         "#{params[:controller]}##{params[:action]}"
     end
