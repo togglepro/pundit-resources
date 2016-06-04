@@ -11,24 +11,70 @@ RSpec.describe UsersController, type: :controller do
     end
   end
 
-  def do_request
-    get :show, params_hash(id: User.create!.id)
+  before do
+    class << @controller
+      include ActionController::Head
+
+      # override #index to allow easy testing with different response codes
+      def index
+        head params[:response_status]
+      end
+    end
+  end
+
+  def do_request(params = {})
+    get :index, params_hash(params)
   end
 
   context "when the policy callback is not called" do
-    before do
-      original = UsersController.instance_method(:context)
-      expect_any_instance_of(UsersController).to receive(:context) { |instance|
-        original.bind(instance).call.merge(policy_used: -> {})
-      }
+    context "when the response is an error" do
+      before do
+        do_request(response_status: code)
+      end
+
+      context "in the 4xx range" do
+        let(:code) { rand(400...500) }
+
+        it "does not raise an exception" do
+          expect(response).to have_http_status code
+        end
+      end
+
+      context "in the 5xx range" do
+        let(:code) { rand(400...500) }
+
+        it "does not raise an exception" do
+          expect(response).to have_http_status code
+        end
+      end
     end
 
-    it "raises an exception" do
-      expect { do_request }.to raise_error Pundit::AuthorizationNotPerformedError
+    context "when the response is not an error" do
+      let(:error) { Pundit::AuthorizationNotPerformedError }
+
+      context "and is in the 2xx range" do
+        let(:code) { rand(200...300) }
+
+        it "raises an exception" do
+          expect { do_request(response_status: code) }.to raise_error error
+        end
+      end
+
+      context "and is in the 3xx range" do
+        let(:code) { rand(300...400) }
+
+        it "raises an exception" do
+          expect { do_request(response_status: code) }.to raise_error error
+        end
+      end
     end
   end
 
   context "when the policy callback is called" do
+    before do
+      @controller.send(:context)[:policy_used].call
+    end
+
     it "responds with 200 OK" do
       do_request
       expect(response).to have_http_status 200
