@@ -5,6 +5,8 @@ module Pundit
     extend ActiveSupport::Concern
 
     included do
+      define_jsonapi_resources_callbacks :policy_authorize
+
       before_save :authorize_create_or_update
       before_remove :authorize_destroy
     end
@@ -32,8 +34,10 @@ module Pundit
     protected
 
     def can(method)
-      context[:policy_used].call
-      policy.public_send(method)
+      run_callbacks :policy_authorize do
+        context[:policy_used].call
+        policy.public_send(method)
+      end
     end
 
     def current_user

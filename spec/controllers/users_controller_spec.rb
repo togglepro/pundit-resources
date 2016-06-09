@@ -10,14 +10,6 @@ RSpec.describe UsersController, type: :controller do
 
   let(:body) { JSON.parse(response.body, symbolize_names: true) }
 
-  def params_hash(inner_hash)
-    if Rails.version < '5.0.0'
-      inner_hash
-    else
-      { params: inner_hash }
-    end
-  end
-
   describe "#index" do
     # Make sure there are multiple users in the database,
     # and select one at random that will feature in the random scope
