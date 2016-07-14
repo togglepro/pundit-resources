@@ -1,5 +1,12 @@
 RSpec.describe Pundit::ResourceController do
-  let(:controller_class) { Class.new { include Pundit::ResourceController } }
+  let(:controller_class) do
+    Class.new do
+      include Pundit::ResourceController
+
+      def current_user
+      end
+    end
+  end
   let(:controller) { controller_class.new }
 
   describe "#context" do
@@ -11,14 +18,6 @@ RSpec.describe Pundit::ResourceController do
 
     it "is protected" do
       expect(controller.protected_methods).to include :context
-    end
-  end
-
-  describe "#current_user" do
-    it "raises an exception" do
-      expect { controller.send(:current_user) }.
-        to raise_error NotImplementedError,
-        "#{controller_class} does not override #current_user"
     end
   end
 
