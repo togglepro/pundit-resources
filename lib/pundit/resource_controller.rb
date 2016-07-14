@@ -12,6 +12,7 @@ module Pundit
         error = Pundit::NotAuthorizedError
         unless config.exception_class_whitelist.include? error
           config.exception_class_whitelist << error
+          config.use_relationship_reflection = true
         end
       end
 
@@ -28,11 +29,12 @@ module Pundit
 
     def reject_forbidden_request(error)
       type = error.record.class.name.underscore.humanize(capitalize: false)
+      human_action = params[:action].humanize(capitalize: false)
       error = JSONAPI::Error.new(
         code: JSONAPI::FORBIDDEN,
         status: :forbidden,
-        title: "#{params[:action].capitalize} Forbidden",
-        detail: "You don't have permission to #{params[:action]} this #{type}.",
+        title: "#{human_action.titleize} Forbidden",
+        detail: "You don't have permission to #{human_action} this #{type}.",
       )
 
       render json: { errors: [error] }, status: 403
