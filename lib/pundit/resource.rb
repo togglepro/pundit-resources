@@ -54,16 +54,26 @@ module Pundit
     end
 
     def records_for(association_name, options={})
-      association_reflection = _model.class.reflect_on_association(association_name)
+      relationships = self.class._relationships.
+        values.
+        select { |r| r.relation_name(context: @context) == association_name }.
+        uniq(&:class)
 
-      if association_reflection.macro == :has_many
+      unless relationships.count == 1
+        raise "Can't infer relationship type for #{association_name}"
+      end
+
+      relationship = relationships.first
+
+      case relationship
+      when JSONAPI::Relationship::ToMany
         records = _model.public_send(association_name)
         policy_scope = Pundit.policy_scope!(
           context[:current_user],
           records
         )
         records.merge(policy_scope)
-      elsif [:has_one, :belongs_to].include?(association_reflection.macro)
+      when JSONAPI::Relationship::ToOne
         record = _model.public_send(association_name)
 
         # Don't rely on policy.show? being defined since it isn't used for
