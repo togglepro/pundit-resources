@@ -1,3 +1,3 @@
-class PostResource < JSONAPI::Resource
-  include Pundit::Resource
+class PostResource < ApplicationResource
+  has_one :user
 end

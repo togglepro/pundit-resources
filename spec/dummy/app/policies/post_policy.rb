@@ -1,25 +1,12 @@
-class PostPolicy
-  attr_reader :user, :record
-
-  def initialize(user, record)
-    @user = user
-    @record = record
+class PostPolicy < ApplicationPolicy
+  def update?
+    false
   end
 
-  def scope
-    Pundit.policy_scope!(user, record.class)
+  def destroy?
+    false
   end
 
-  class Scope
-    attr_reader :user, :scope
-
-    def initialize(user, scope)
-      @user = user
-      @scope = scope
-    end
-
-    def resolve
-      scope
-    end
+  class Scope < Scope
   end
 end
