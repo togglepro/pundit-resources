@@ -41,7 +41,7 @@ module Pundit
     end
 
     def current_user
-      context&.[](:current_user)
+      context[:current_user]
     end
 
     def policy
