@@ -21,7 +21,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency "activesupport"
   spec.add_dependency "jsonapi-resources"
   spec.add_dependency "pundit"
-  spec.add_dependency "rails", ">= 4.2.1", "< 5.1"
+  spec.add_dependency "rails", ">= 4.2.1", "< 5.2"
 
   spec.add_development_dependency "bundler", "~> 1.11"
   spec.add_development_dependency "rake", "~> 10.0"
