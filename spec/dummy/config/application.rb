@@ -19,6 +19,9 @@ module Dummy
     if ActiveRecord::Base.respond_to?(:belongs_to_required_by_default=)
       config.active_record.belongs_to_required_by_default = false
     end
+    if config.active_record.sqlite3.respond_to?(:represent_boolean_as_integer)
+      config.active_record.sqlite3.represent_boolean_as_integer = true
+    end
   end
 end
 
