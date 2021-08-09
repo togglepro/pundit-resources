@@ -10,8 +10,8 @@ module Pundit
 
       JSONAPI.configure do |config|
         error = Pundit::NotAuthorizedError
-        unless config.exception_class_whitelist.include? error
-          config.exception_class_whitelist << error
+        unless config.exception_class_allowlist.include? error
+          config.exception_class_allowlist << error
           config.use_relationship_reflection = true
         end
       end
